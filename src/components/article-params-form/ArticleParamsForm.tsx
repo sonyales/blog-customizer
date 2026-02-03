@@ -29,43 +29,46 @@ export const ArticleParamsForm = ({
 	onApply,
 	onReset,
 }: FormProps) => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const panelRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
-		if (!isOpen) return;
+		if (!isMenuOpen) return;
 
 		const handleMouseDown = (e: MouseEvent) => {
 			const target = e.target as Node;
 			if (panelRef.current && !panelRef.current.contains(target)) {
-				setIsOpen(false);
+				setIsMenuOpen(false);
 			}
 		};
 		document.addEventListener('mousedown', handleMouseDown);
 
 		return () => document.removeEventListener('mousedown', handleMouseDown);
-	}, [isOpen]);
+	}, [isMenuOpen]);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 		onApply();
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
 	const handleReset = () => {
 		onReset();
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
 	return (
 		<>
 			<div ref={panelRef}>
 				<ArrowButton
-					isOpen={isOpen}
-					onClick={() => setIsOpen((prev) => !prev)}
+					isOpen={isMenuOpen}
+					onClick={() => setIsMenuOpen((prev) => !prev)}
 				/>
 				<aside
-					className={clsx(styles.container, isOpen && styles.container_open)}>
+					className={clsx(
+						styles.container,
+						isMenuOpen && styles.container_open
+					)}>
 					<form className={styles.form} onSubmit={handleSubmit}>
 						<h2 className={styles.title}>Задайте параметры</h2>
 						<Select
