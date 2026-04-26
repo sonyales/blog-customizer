@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { StrictMode, CSSProperties } from 'react';
+import { StrictMode, CSSProperties, useMemo, useState } from 'react';
 import clsx from 'clsx';
 
 import { Article } from './components/article/Article';
@@ -13,19 +13,34 @@ const domNode = document.getElementById('root') as HTMLDivElement;
 const root = createRoot(domNode);
 
 const App = () => {
+	const initalState = useMemo(() => defaultArticleState, []); // состояние для "сброса" хранится здесь
+
+	const [draftState, setDraftState] = useState(initalState);
+	const [appliedState, setAppliedState] = useState(initalState);
+
+	const apply = () => setAppliedState(draftState);
+	const reset = () => {
+		setDraftState(initalState);
+		setAppliedState(initalState);
+	};
 	return (
 		<main
 			className={clsx(styles.main)}
 			style={
 				{
-					'--font-family': defaultArticleState.fontFamilyOption.value,
-					'--font-size': defaultArticleState.fontSizeOption.value,
-					'--font-color': defaultArticleState.fontColor.value,
-					'--container-width': defaultArticleState.contentWidth.value,
-					'--bg-color': defaultArticleState.backgroundColor.value,
+					'--font-family': appliedState.fontFamilyOption.value,
+					'--font-size': appliedState.fontSizeOption.value,
+					'--font-color': appliedState.fontColor.value,
+					'--container-width': appliedState.contentWidth.value,
+					'--bg-color': appliedState.backgroundColor.value,
 				} as CSSProperties
 			}>
-			<ArticleParamsForm />
+			<ArticleParamsForm
+				draftState={draftState}
+				onDraftChange={setDraftState}
+				onApply={apply}
+				onReset={reset}
+			/>
 			<Article />
 		</main>
 	);
